@@ -9,20 +9,27 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
-type Server struct{}
+type Server struct {
+	Port  string
+	Store *redis.Client
+}
 
-func NewServer() *Server {
-	return &Server{}
+func NewServer(port string, store *redis.Client) *Server {
+	return &Server{
+		Port:  port,
+		Store: store,
+	}
 }
 
 func (s *Server) StartServer() {
 	mux := http.NewServeMux()
 	// add routes
-	// todo take this in
 	server := http.Server{
-		Addr:         ":8080",
+		Addr:         fmt.Sprintf(":%s", s.Port),
 		Handler:      mux,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -30,7 +37,7 @@ func (s *Server) StartServer() {
 	}
 	// start the server
 	go func() {
-		fmt.Println("Starting server on port 8080")
+		fmt.Printf("Starting server on port %s\n", s.Port)
 		err := server.ListenAndServe()
 		if err != nil {
 			fmt.Printf("Error starting server: %s", err.Error())
