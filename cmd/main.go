@@ -21,6 +21,7 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
+	// TODO: make wrap this in a config struct
 	redisHost := os.Getenv("REDIS_HOST")
 	redisPort := os.Getenv("REDIS_PORT")
 	redisPassword := os.Getenv("REDIS_PASSWORD")

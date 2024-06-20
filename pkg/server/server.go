@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gilwong00/url-shortner/pkg/handlers"
+	"github.com/gilwong00/url-shortner/pkg/middleware"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -27,7 +29,19 @@ func NewServer(port string, store *redis.Client) *Server {
 
 func (s *Server) StartServer() {
 	mux := http.NewServeMux()
-	// add routes
+	// routes
+	// GET
+	mux.HandleFunc("GET /urls", handlers.GetURL)
+	// POST
+	mux.Handle("POST /url", middleware.RateLimiter(
+		http.HandlerFunc(handlers.CreateShortenURL),
+		context.Background(),
+		s.Store,
+		// TODO: replace with config
+		10,
+	),
+	)
+
 	server := http.Server{
 		Addr:         fmt.Sprintf(":%s", s.Port),
 		Handler:      mux,

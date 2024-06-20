@@ -18,6 +18,8 @@ func NewRedisClient(host string, port string, password string) (*redis.Client, e
 	client := redis.NewClient(&redis.Options{
 		Addr:     address,
 		Password: password,
+		// Maybe config this?
+		DB: 1,
 	})
 	return client, nil
 }
