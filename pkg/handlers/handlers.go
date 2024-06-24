@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gilwong00/url-shortner/pkg/config"
 	"github.com/redis/go-redis/v9"
 )
 
 type Handler struct {
-	Store *redis.Client
+	config *config.Config
+	store  *redis.Client
 }
 
 const (
@@ -17,9 +19,10 @@ const (
 	appJSON     = "application/json"
 )
 
-func NewHandler(store *redis.Client) *Handler {
+func NewHandler(config *config.Config, store *redis.Client) *Handler {
 	return &Handler{
-		Store: store,
+		config: config,
+		store:  store,
 	}
 }
 

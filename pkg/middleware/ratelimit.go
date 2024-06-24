@@ -16,7 +16,7 @@ type ErrorResponse struct {
 	Message any    `json:"message"`
 }
 
-func RateLimiter(next http.Handler, ctx context.Context, store *redis.Client, maxLimit int64) http.Handler {
+func RateLimiter(next http.Handler, ctx context.Context, store *redis.Client, maxLimit int) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ipAddress := GetIPAddress(r)
 		counter, err := store.Get(ctx, ipAddress).Int64()
@@ -33,7 +33,7 @@ func RateLimiter(next http.Handler, ctx context.Context, store *redis.Client, ma
 			writeErrResponse(w, 500, err.Error())
 		} else {
 			// Check if rate limit is exceeded
-			if counter > maxLimit {
+			if counter > int64(maxLimit) {
 				limit, err := store.TTL(ctx, ipAddress).Result()
 				if err != nil {
 					writeErrResponse(w, 400, err.Error())

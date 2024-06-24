@@ -10,41 +10,41 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gilwong00/url-shortner/pkg/config"
 	"github.com/gilwong00/url-shortner/pkg/handlers"
 	"github.com/gilwong00/url-shortner/pkg/middleware"
 	"github.com/redis/go-redis/v9"
 )
 
 type Server struct {
-	Port  string
+	Port  int
 	Store *redis.Client
 }
 
-func NewServer(port string, store *redis.Client) *Server {
+func NewServer(port int, store *redis.Client) *Server {
 	return &Server{
 		Port:  port,
 		Store: store,
 	}
 }
 
-func (s *Server) StartServer() {
-	handler := handlers.NewHandler(s.Store)
+func (s *Server) StartServer(config *config.Config) {
+	handler := handlers.NewHandler(config, s.Store)
 	mux := http.NewServeMux()
 	// routes
 	// GET
-	mux.HandleFunc("GET /urls", handler.GetURL)
+	mux.HandleFunc("GET /url/{shortName}", handler.GetURL)
 	// POST
 	mux.Handle("POST /url", middleware.RateLimiter(
 		http.HandlerFunc(handler.CreateShortenURL),
 		context.Background(),
 		s.Store,
-		// TODO: replace with config
-		10,
+		config.MaxRequestLimit,
 	),
 	)
 
 	server := http.Server{
-		Addr:         fmt.Sprintf(":%s", s.Port),
+		Addr:         fmt.Sprintf(":%v", s.Port),
 		Handler:      mux,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -52,7 +52,7 @@ func (s *Server) StartServer() {
 	}
 	// start the server
 	go func() {
-		fmt.Printf("Starting server on port %s\n", s.Port)
+		fmt.Printf("Starting server on port %v\n", s.Port)
 		err := server.ListenAndServe()
 		if err != nil {
 			fmt.Printf("Error starting server: %s", err.Error())

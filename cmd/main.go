@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"os"
 
+	"github.com/gilwong00/url-shortner/pkg/config"
 	"github.com/gilwong00/url-shortner/pkg/redisapp"
 	"github.com/gilwong00/url-shortner/pkg/server"
 	"github.com/joho/godotenv"
@@ -17,20 +17,13 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("failed to load env vars", err)
 	}
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
-	// TODO: make wrap this in a config struct
-	redisHost := os.Getenv("REDIS_HOST")
-	redisPort := os.Getenv("REDIS_PORT")
-	redisPassword := os.Getenv("REDIS_PASSWORD")
-	store, err := redisapp.NewRedisClient(redisHost, redisPort, redisPassword)
+	config, err := config.NewConfig()
+	store, err := redisapp.NewRedisClient(config.RedisHost, config.RedisPort, config.RedisPassword)
 	// fmt.Println("redis ping", store.Ping(context.Background()))
 	if err != nil {
 		fmt.Println("failed to created redis store")
 		panic(err)
 	}
-	s := server.NewServer(port, store)
-	s.StartServer()
+	s := server.NewServer(config.ServerPort, store)
+	s.StartServer(config)
 }
