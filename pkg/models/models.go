@@ -12,3 +12,7 @@ type NewShortenUrlResponse struct {
 	ShortURL string        `json:"shortURL"`
 	Expiry   time.Duration `json:"expiry"`
 }
+
+type UpdateUrlRequest struct {
+	Expiry time.Duration `json:"expiry" validate:"required"`
+}

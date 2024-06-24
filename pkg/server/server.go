@@ -42,6 +42,10 @@ func (s *Server) StartServer(config *config.Config) {
 		config.MaxRequestLimit,
 	),
 	)
+	// PUT
+	mux.HandleFunc("PUT /url/{shortName}", handler.UpdateURL)
+	// DELETE
+	mux.HandleFunc("DELETE /url/{shortName}", handler.DeleteURL)
 
 	server := http.Server{
 		Addr:         fmt.Sprintf(":%v", s.Port),

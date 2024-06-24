@@ -3,26 +3,20 @@ package handlers
 import (
 	"context"
 	"net/http"
-
-	"github.com/redis/go-redis/v9"
 )
 
-func (h *Handler) GetURL(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeleteURL(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	shortName := r.PathValue("shortName")
 	if shortName == "" {
 		GenericErrorResponse(w, http.StatusBadRequest, "missing param")
 		return
 	}
-	result, err := h.store.Get(ctx, shortName).Result()
-	if err == redis.Nil || result == "" {
-		GenericErrorResponse(w, http.StatusNotFound, "could not find url for short name")
-		return
-	} else if err != nil {
+	if err := h.store.Del(ctx, shortName).Err(); err != nil {
 		GenericErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	w.Header().Set(contentType, appJSON)
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(result))
+	w.Write([]byte("Url been deleted"))
 }
