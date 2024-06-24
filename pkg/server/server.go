@@ -28,13 +28,14 @@ func NewServer(port string, store *redis.Client) *Server {
 }
 
 func (s *Server) StartServer() {
+	handler := handlers.NewHandler(s.Store)
 	mux := http.NewServeMux()
 	// routes
 	// GET
-	mux.HandleFunc("GET /urls", handlers.GetURL)
+	mux.HandleFunc("GET /urls", handler.GetURL)
 	// POST
 	mux.Handle("POST /url", middleware.RateLimiter(
-		http.HandlerFunc(handlers.CreateShortenURL),
+		http.HandlerFunc(handler.CreateShortenURL),
 		context.Background(),
 		s.Store,
 		// TODO: replace with config

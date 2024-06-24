@@ -2,6 +2,6 @@ package handlers
 
 import "net/http"
 
-func GetURL(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetURL(w http.ResponseWriter, r *http.Request) {
 
 }
