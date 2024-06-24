@@ -16,6 +16,7 @@ type Config struct {
 
 const (
 	defaultMaxRequestLimit = int(10)
+	defaultPort            = "8080"
 )
 
 func NewConfig() (*Config, error) {
@@ -25,6 +26,9 @@ func NewConfig() (*Config, error) {
 	redisPassword := os.Getenv("REDIS_PASSWORD")
 	domain := os.Getenv("DOMAIN")
 	maxRequestLimit := os.Getenv("MAX_REQUEST_LIMIT")
+	if port == "" {
+		port = defaultPort
+	}
 	rPort, err := strconv.Atoi(redisPort)
 	if err != nil {
 		return nil, err

@@ -10,10 +10,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const (
-	defaultPort = "8080"
-)
-
 func main() {
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("failed to load env vars", err)
