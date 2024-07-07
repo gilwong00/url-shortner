@@ -16,3 +16,12 @@ type NewShortenUrlResponse struct {
 type UpdateUrlRequest struct {
 	Expiry time.Duration `json:"expiry" validate:"required"`
 }
+
+type AddTagRequest struct {
+	ShortID string `json:"shortId"`
+	Tag     string `json:"tag"`
+}
+
+type AddTagResponse struct {
+	Tags []string `json:"tags"`
+}

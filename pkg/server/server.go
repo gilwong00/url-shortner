@@ -42,6 +42,8 @@ func (s *Server) StartServer(config *config.Config) {
 		config.MaxRequestLimit,
 	),
 	)
+	mux.HandleFunc("POST /tag", handler.AddTag)
+
 	// PUT
 	mux.HandleFunc("PUT /url/{shortName}", handler.UpdateURL)
 	// DELETE

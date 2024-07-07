@@ -26,7 +26,7 @@ func NewHandler(config *config.Config, store *redis.Client) *Handler {
 	}
 }
 
-func InternalServerErrorHandler(w http.ResponseWriter, r *http.Request) {
+func InternalServerErrorHandler(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusInternalServerError)
 	w.Write([]byte("500 Internal Server Error"))
 }
